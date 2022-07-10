@@ -9,5 +9,7 @@ gem 'puma'
 gem "sinatra"
 gem "sinatra-contrib"
 gem "dotenv"
+# https://github.com/line/line-bot-sdk-ruby
+# https://developers.line.biz/ja/docs/messaging-api/overview/
 gem "line-bot-api"
 

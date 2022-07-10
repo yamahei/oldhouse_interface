@@ -6,40 +6,53 @@
 
 * LINEBOT + (enquete system)
 
+
+リンク
+--
+
+* [LINE Developers console](https://developers.line.biz/console/)
+* [LINE アカウントマネージャ](https://manager.line.biz/)
+
+
 起動方法（ローカル）
 --
 
-1. インストール
-    ```sh
-    $ bundle install
-    ```
-2. ローカルサーバ起動
-    ```sh
-    $ bundle exec ruby app.rb -o 0.0.0.0
-    ```
-3. 公開（`ngrok`）
-    ```sh
-    $ ngrok http 80
-    ngrok                                               (Ctrl+C to quit)
-    Hello World! https://ngrok.com/next-generation
-
-    Session Status    online
-    Session Expires   1 hour, 58 minutes
-    Terms of Service  https://ngrok.com/tos
-    Version           3.0.6
-    Region            Japan (jp)
-    Latency           31ms
-    Web Interface     http://127.0.0.1:4040
-    Forwarding        https://xxxxx.jp.ngrok.io -> http://localhost:4567
-
-    Connections       ttl     opn     rt1     rt5     p50     p90
-                    0       0       0.00    0.00    0.00    0.00
-    ```
-4. MessagingAPI（LINEBOT）チェンネル作成、WebhookURL登録
+1. MessagingAPIチャネル作成
     * 以下を参考にLINEBOTを作成する
-      * 【参考】[Ruby + SinatraでLINE Botを作ろう – Part 1](https://www.mizucoffee.com/archives/1076)
-    * 「Webhook設定 - Webhook URL」にはngrok出力URL（https）の末尾に`/callback`を付与
-      * https://xxxxx.jp.ngrok.io/callback
+        * 【参考】[Ruby + SinatraでLINE Botを作ろう – Part 1](https://www.mizucoffee.com/archives/1076)
+    * `.env`ファイルを作成する
+        ```
+        LINE_CHANNEL_ID=#チャネルID
+        LINE_CHANNEL_SECRET=#チャネルシークレット
+        LINE_CHANNEL_TOKEN=#チャネルアクセストークン（長期）
+        ```
+    * 「Webhook設定 - Webhook URL」にはあとでngrok出力URL（https）の末尾に`/callback`を付与
+        * https://xxxxx.jp.ngrok.io/callback
+1. サンプルプログラムのセットアップと起動
+    ```sh
+    $ bundle install # インストール
+    #$ bundle exec ruby regist.rb # リッチメニュー登録→上手くいかないのでやめ
+    $ bundle exec ruby app.rb -o 0.0.0.0 # ローカルサーバ起動
+    ```
+1. 公開（`ngrok`）
+    * `.env`が正しく設定されていないと動かない！
+        ```sh
+        $ ngrok http 80
+        ngrok                                               (Ctrl+C to quit)
+        Hello World! https://ngrok.com/next-generation
+
+        Session Status    online
+        Session Expires   1 hour, 58 minutes
+        Terms of Service  https://ngrok.com/tos
+        Version           3.0.6
+        Region            Japan (jp)
+        Latency           31ms
+        Web Interface     http://127.0.0.1:4040
+        Forwarding        https://xxxxx.jp.ngrok.io -> http://localhost:4567
+
+        Connections       ttl     opn     rt1     rt5     p50     p90
+                        0       0       0.00    0.00    0.00    0.00
+        ```
 
 
 調査
@@ -49,10 +62,11 @@
 
 * LINEアカウントマネージャで定型文を応答
     * なぜか動いてない
+    * Botモードだから？
 * LINEBOTで定型文を応答
-    * 未調査
+    * 未調査（たぶんいける
 
-### ユーザIDの取得
+### ユーザIDの取得（解決
 
 * Q: webhookへのリクエストにユーザIDが含まれるか？
 * A: 含まれる（`events[n]->source[:userId]`）
@@ -62,8 +76,7 @@
         * LINEのユーザID生のままではよろしくない？
         * 暗号化する？→LINEメッセージ送信時に生のユーザIDが必要なため
 
-
-### DB代わりのアンケートシステム
+### DB代わりのアンケートシステム（解決
 
 * 無料のアンケートシステム
 * 引数で隠しパラメータを含めることが出来ること
@@ -81,3 +94,10 @@
     * LINEユーザIDが必要
     * アンケートに入れておく
         * 外部に漏れても迷惑かからないように可逆暗号化しておくべき
+
+### LINE:複数ユーザへのメッセージ送信
+
+* [マルチキャストメッセージ](https://developers.line.biz/ja/reference/messaging-api/#send-multicast-message)で実現する
+* ↑`curl`サンプルがあるので、最初は手運用かな
+* 指定するユーザIDはスプレッドシートに暗号化されている
+    * 複合化は`chiper.rb`で行なえる、はず
