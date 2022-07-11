@@ -105,16 +105,15 @@
 * 【課題・注意点】
     * 同時に送信できるユーザIDは500件
     * 同じユーザIDでも暗号化文字列が異なる？
-        * 復号化すると同じになる不思議→ivがランダムだからだわ
-    * 
+        * 復号化すると同じになる不思議→ivがランダムだからだわ：要調査
 
 ```
 curl -v -X POST https://api.line.me/v2/bot/message/multicast \
 -H 'Content-Type: application/json' \
--H 'Authorization: Bearer wjnz3LIBtygQOg4M3r2YJj4VxIlGsBXqaD4E01j1+gLklBu/AUhczumCYEpvV338LNbB9GW3f0IebnhfrK+fbw5b6Psd/JcS0SfK2bL9xqUlCjTkNf7ugRBI5nJeKSUvvCx/hpl/QOKYpsJ2KW3HfAdB04t89/1O/w1cDnyilFU=' \
+-H 'Authorization: Bearer {LINE_CHANNEL_TOKEN}' \
 -H 'X-Line-Retry-Key: 2d931510-d99f-494a-8c67-87feb05e1594' \
 -d '{
-    "to": ["U80092846061fcf297e22fd39a2cb2e6d", "U80092846061fcf297e22fd39a2cb2e6d", "U0d115aa4f9fde50fe20fe7e9804d11b1", "Ubc7f5ce08baa77ba9a4743a418d450ef"],
+    "to": ["user_id(line)", ...],
     "messages":[
         {
             "type":"text",
